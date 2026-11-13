@@ -22,15 +22,12 @@ function Admin({ onBack }) {
   const [loading, setLoading] = useState(true)
   const [editingId, setEditingId] = useState(null)
 
-  // Store the login token
   const [token, setToken] = useState(
     sessionStorage.getItem('adminToken') || ''
   )
 
-  // Control whether the password is visible
   const [showPassword, setShowPassword] = useState(false)
 
-  // Store login form values
   const [loginData, setLoginData] = useState({
     username: '',
     password: '',
@@ -73,6 +70,17 @@ function Admin({ onBack }) {
         setLoading(false)
       })
   }, [token])
+
+  // Automatically hide dashboard notifications after 3 seconds
+  useEffect(() => {
+    if (!message) return
+
+    const timer = window.setTimeout(() => {
+      setMessage('')
+    }, 3000)
+
+    return () => window.clearTimeout(timer)
+  }, [message])
 
   // Admin login
   const handleLogin = async (event) => {
@@ -266,11 +274,11 @@ function Admin({ onBack }) {
     }
   }
 
-  // Display login screen if admin is not authenticated
+  // Redesigned admin login screen
   if (!token) {
     return (
-      <div className="website">
-        <header className="navbar">
+      <div className="admin-login-page">
+        <header className="admin-login-header">
           <div className="logo">
             Tech<span>Sphere</span>
           </div>
@@ -280,17 +288,25 @@ function Admin({ onBack }) {
           </button>
         </header>
 
-        <main className="container">
-          <section className="latest-section">
+        <main className="admin-login-main">
+          <div className="admin-login-card">
+            <div className="admin-login-icon">TS</div>
+
             <span className="tag">ADMIN PANEL</span>
 
-            <h1>Admin Login</h1>
+            <h1>Welcome Back</h1>
 
-            <form onSubmit={handleLogin}>
-              <p>
+            <p className="admin-login-subtitle">
+              Sign in to manage your TechSphere articles.
+            </p>
+
+            <form onSubmit={handleLogin} className="admin-login-form">
+              <div className="admin-form-group">
                 <label>Username</label>
+
                 <input
                   type="text"
+                  placeholder="Enter your username"
                   value={loginData.username}
                   onChange={(event) =>
                     setLoginData({
@@ -300,13 +316,15 @@ function Admin({ onBack }) {
                   }
                   required
                 />
-              </p>
+              </div>
 
-              <p>
+              <div className="admin-form-group">
                 <label>Password</label>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+
+                <div className="admin-password-wrapper">
                   <input
                     type={showPassword ? 'text' : 'password'}
+                    placeholder="Enter your password"
                     value={loginData.password}
                     onChange={(event) =>
                       setLoginData({
@@ -315,40 +333,40 @@ function Admin({ onBack }) {
                       })
                     }
                     required
-                    style={{ flex: 1, minWidth: 0 }}
                   />
 
                   <button
                     type="button"
-                    onClick={() => setShowPassword((previous) => !previous)}
+                    className="admin-password-toggle"
+                    onClick={() =>
+                      setShowPassword((previous) => !previous)
+                    }
                     aria-label={showPassword ? 'Hide password' : 'Show password'}
-                    style={{
-                      padding: '10px 14px',
-                      border: '1px solid #ccc',
-                      borderRadius: '5px',
-                      backgroundColor: '#f5f5f5',
-                      cursor: 'pointer',
-                      whiteSpace: 'nowrap',
-                    }}
                   >
                     {showPassword ? 'Hide' : 'Show'}
                   </button>
                 </div>
-              </p>
+              </div>
 
-              <button type="submit" className="read-button">
-                Login
+              <button type="submit" className="admin-login-button">
+                Login to Dashboard
               </button>
 
-              {message && <p>{message}</p>}
+              {message && (
+                <p className="admin-login-message">{message}</p>
+              )}
             </form>
-          </section>
+
+            <p className="admin-login-footer">
+              Secure Admin Access · TechSphere
+            </p>
+          </div>
         </main>
       </div>
     )
   }
 
-  // Display admin dashboard after login
+  // Admin dashboard after login
   return (
     <div className="website">
       <header className="navbar">
@@ -373,6 +391,13 @@ function Admin({ onBack }) {
           </button>
         </div>
       </header>
+
+      {/* Temporary notification popup */}
+      {message && (
+        <div className="admin-toast" role="status" aria-live="polite">
+          {message}
+        </div>
+      )}
 
       <main className="container">
 
@@ -499,8 +524,6 @@ function Admin({ onBack }) {
                 Cancel Edit
               </button>
             )}
-
-            {message && <p>{message}</p>}
           </form>
         </section>
 

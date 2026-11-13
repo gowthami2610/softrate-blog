@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import './App.css'
 import Admin from './Admin'
@@ -30,6 +31,7 @@ function App() {
         if (!response.ok) {
           throw new Error('Failed to fetch articles')
         }
+
         return response.json()
       })
       .then((data) => {
@@ -67,10 +69,15 @@ function App() {
       article.category === selectedCategory
 
     const matchesSearch =
-      article.title.toLowerCase().includes(search.toLowerCase()) ||
-      article.description.toLowerCase().includes(search.toLowerCase())
+      (article.title || '')
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      (article.description || '')
+        .toLowerCase()
+        .includes(search.toLowerCase())
 
-    return matchesCategory && matchesSearch && !article.featured
+    // Include featured articles in Explore Articles
+    return matchesCategory && matchesSearch
   })
 
   // Display Admin page when Admin Login is clicked
