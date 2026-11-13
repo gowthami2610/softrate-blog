@@ -21,8 +21,38 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const [articles, setArticles] = useState([])
   const [loading, setLoading] = useState(true)
-  const [showAdmin, setShowAdmin] = useState(false)
+
+  const [showAdmin, setShowAdmin] = useState(
+    window.location.pathname === '/admin'
+  )
+
   const [selectedArticle, setSelectedArticle] = useState(null)
+
+  // Handle browser back and forward navigation
+  useEffect(() => {
+    const handleNavigation = () => {
+      setShowAdmin(window.location.pathname === '/admin')
+      setSelectedArticle(null)
+    }
+
+    window.addEventListener('popstate', handleNavigation)
+
+    return () => {
+      window.removeEventListener('popstate', handleNavigation)
+    }
+  }, [])
+
+  // Open Admin Login
+  const openAdmin = () => {
+    window.history.pushState({}, '', '/admin')
+    setShowAdmin(true)
+  }
+
+  // Return to Homepage
+  const closeAdmin = () => {
+    window.history.replaceState({}, '', '/')
+    setShowAdmin(false)
+  }
 
   // Fetch articles whenever the homepage becomes visible
   useEffect(() => {
@@ -97,7 +127,7 @@ function App() {
 
   // Display Admin page
   if (showAdmin) {
-    return <Admin onBack={() => setShowAdmin(false)} />
+    return <Admin onBack={closeAdmin} />
   }
 
   // Display the full article
@@ -165,7 +195,7 @@ function App() {
 
         <button
           className="admin-link"
-          onClick={() => setShowAdmin(true)}
+          onClick={openAdmin}
         >
           Admin Login
         </button>
