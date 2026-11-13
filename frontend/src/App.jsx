@@ -24,17 +24,24 @@ function App() {
   const [showAdmin, setShowAdmin] = useState(false)
   const [selectedArticle, setSelectedArticle] = useState(null)
 
-  // Fetch articles from the backend
+  // Fetch articles whenever the homepage becomes visible
   useEffect(() => {
-    fetch(`${API_URL}/api/articles`)
-      .then((response) => {
+    if (showAdmin) return
+
+    let isActive = true
+
+    const fetchArticles = async () => {
+      setLoading(true)
+
+      try {
+        const response = await fetch(`${API_URL}/api/articles`)
+
         if (!response.ok) {
           throw new Error('Failed to fetch articles')
         }
 
-        return response.json()
-      })
-      .then((data) => {
+        const data = await response.json()
+
         const formattedArticles = data.map((article) => ({
           ...article,
           id: article._id,
@@ -48,15 +55,24 @@ function App() {
           ),
         }))
 
-        setArticles(formattedArticles)
-      })
-      .catch((error) => {
+        if (isActive) {
+          setArticles(formattedArticles)
+        }
+      } catch (error) {
         console.error('Error fetching articles:', error)
-      })
-      .finally(() => {
-        setLoading(false)
-      })
-  }, [])
+      } finally {
+        if (isActive) {
+          setLoading(false)
+        }
+      }
+    }
+
+    fetchArticles()
+
+    return () => {
+      isActive = false
+    }
+  }, [showAdmin])
 
   // Find the featured article
   const featuredArticle =
@@ -76,16 +92,15 @@ function App() {
         .toLowerCase()
         .includes(search.toLowerCase())
 
-    // Include featured articles in Explore Articles
     return matchesCategory && matchesSearch
   })
 
-  // Display Admin page when Admin Login is clicked
+  // Display Admin page
   if (showAdmin) {
     return <Admin onBack={() => setShowAdmin(false)} />
   }
 
-  // Display the full article when a visitor selects one
+  // Display the full article
   if (selectedArticle) {
     return (
       <div className="website">
