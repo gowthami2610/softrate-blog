@@ -1,7 +1,10 @@
-
 import { useState, useEffect } from 'react'
 import './App.css'
 import Admin from './Admin'
+
+// Backend API URL
+const API_URL =
+  import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 const categories = [
   'All',
@@ -22,7 +25,7 @@ function App() {
 
   // Fetch articles from the backend
   useEffect(() => {
-    fetch('http://localhost:5000/api/articles')
+    fetch(`${API_URL}/api/articles`)
       .then((response) => {
         if (!response.ok) {
           throw new Error('Failed to fetch articles')
