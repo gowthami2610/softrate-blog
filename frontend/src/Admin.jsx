@@ -71,7 +71,7 @@ function Admin({ onBack }) {
       })
   }, [token])
 
-  // Automatically hide dashboard notifications after 3 seconds
+  // Automatically hide notifications after 3 seconds
   useEffect(() => {
     if (!message) return
 
@@ -274,17 +274,46 @@ function Admin({ onBack }) {
     }
   }
 
-  // Redesigned admin login screen
+  // Shared Home button style
+  const homeButtonStyle = {
+    display: 'inline-block',
+    visibility: 'visible',
+    opacity: 1,
+    cursor: 'pointer',
+    fontWeight: '600',
+    padding: '10px 20px',
+    backgroundColor: '#2563eb',
+    color: '#ffffff',
+    border: 'none',
+    borderRadius: '6px',
+    fontSize: '14px',
+  }
+
+  // Admin login screen
   if (!token) {
     return (
       <div className="admin-login-page">
-        <header className="admin-login-header">
+        <header
+          className="admin-login-header"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            width: '100%',
+            boxSizing: 'border-box',
+          }}
+        >
           <div className="logo">
             Tech<span>Sphere</span>
           </div>
 
-          <button onClick={onBack} className="admin-link">
-            Back to Homepage
+          <button
+            type="button"
+            onClick={onBack}
+            className="admin-link"
+            style={homeButtonStyle}
+          >
+            Home
           </button>
         </header>
 
@@ -383,11 +412,15 @@ function Admin({ onBack }) {
           </button>
 
           <button
+            type="button"
             onClick={onBack}
             className="admin-link"
-            style={{ marginLeft: '10px' }}
+            style={{
+              ...homeButtonStyle,
+              marginLeft: '10px',
+            }}
           >
-            Back to Homepage
+            Home
           </button>
         </div>
       </header>
